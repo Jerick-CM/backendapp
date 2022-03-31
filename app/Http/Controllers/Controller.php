@@ -10,4 +10,11 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    public $time_start;
+
+    public function __construct()
+    {
+        $this->time_start = microtime(true);
+    }
 }
