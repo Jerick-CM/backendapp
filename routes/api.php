@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,10 @@ Route::post('/login', LoginController::class);
 
 Route::post('/register', [RegisterController::class, 'register']);
 
+
+Route::group(['prefix' => 'user','middleware' => 'throttle:500,1'], function () {
+
+
+    Route::post('/datatable', [UserController::class, 'datatable']);
+
+});
