@@ -101,16 +101,4 @@ class RegisterController extends Controller
 
     }
 
-    public function test(Request $request)
-    {
-        die();
-        // $request->session()->regenerate();
-        return response()->json([
-            'success' => true,
-            '_benchmark' => microtime(true) -  $this->time_start,
-            // 'errors' => $validator->errors(),
-        ], 200);
-    }
-
-
 }
