@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Role;
 
 class User extends Authenticatable
 {
@@ -86,8 +87,8 @@ class User extends Authenticatable
 
     public function roles()
     {
-
-        return $this->belongsToMany(Role::class);
+        return $this->hasOne(Role::class);
+        // return $this->belongsToMany(Role::class);
     }
 
     public function messageoftheday()

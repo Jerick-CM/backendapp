@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +29,7 @@ Route::post('/login', LoginController::class);
 
 Route::post('/logout', function (Request $request) {
     $time_start = microtime(true);
+
     auth()->guard('web')->logout();
     $request->session()->invalidate();
     $time_end = microtime(true);
@@ -36,15 +39,19 @@ Route::post('/logout', function (Request $request) {
         'success' => true,
         '_elapsed_time' => $timeend,
     ], 200);
-});
 
+});
 
 Route::post('/register', [RegisterController::class, 'register']);
 
-
-Route::group(['prefix' => 'user','middleware' => 'throttle:500,1'], function () {
-
+Route::group(['prefix' => 'user', 'middleware' => 'throttle:500,1'], function () {
 
     Route::post('/datatable', [UserController::class, 'datatable']);
+    Route::delete('/delete/{id}', [UserController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'role', 'middleware' => 'throttle:500,1'], function () {
+
+    Route::get('/data', [RoleController::class, 'get_roles']);
 
 });

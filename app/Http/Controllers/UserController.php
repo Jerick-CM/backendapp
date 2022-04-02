@@ -90,30 +90,33 @@ class UserController extends Controller
     public function datatable(Request $request)
     {
 
-        $skip = $request->page;
         if ($request->page == 1) {
             $skip = 0;
         } else {
             $skip = $request->page * $request->page;
         }
-
+        $table = 'users';
         if ($request->sortBy == ""  && $request->sortDesc == "") {
 
             $page = $request->has('page') ? $request->get('page') : 1;
 
             $limit = $request->has('itemsPerPage') ? $request->get('itemsPerPage') : 10;
 
-            $Data = User::where([['name', 'LIKE', "%" . $request->search . "%"]])
+            $Data = User::join('role_user', 'role_user.user_id', '=', $table . '.id')
+                ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                ->select('users.*', 'roles.name AS role_name', 'role_user.role_id AS role_id')
+                ->where([['users.name', 'LIKE', "%" . $request->search . "%"]])
                 ->orWhere([['users.email', 'LIKE', "%" . $request->search . "%"]])
                 ->limit($limit)
                 ->offset(($page - 1) * $limit)
                 ->take($request->itemsPerPage)
                 ->get();
 
-            $Data_count = User::where([['name', 'LIKE', "%" . $request->search . "%"]])
+            $Data_count = User::join('role_user', 'role_user.user_id', '=', $table . '.id')
+                ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                ->where([['users.name', 'LIKE', "%" . $request->search . "%"]])
                 ->orWhere([['users.email', 'LIKE', "%" . $request->search . "%"]])
                 ->get();
-
         } else {
 
             if ($request->sortDesc) {
@@ -125,14 +128,20 @@ class UserController extends Controller
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('itemsPerPage') ? $request->get('itemsPerPage') : 10;
 
-            $Data = User::where([['name', 'LIKE', "%" . $request->search . "%"]])
+            $Data = User::join('role_user', 'role_user.user_id', '=', $table . '.id')
+                ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                ->select('users.*', 'roles.name AS role_name', 'role_user.role_id AS role_id')
+                ->where([['users.name', 'LIKE', "%" . $request->search . "%"]])
                 ->orWhere([['users.email', 'LIKE', "%" . $request->search . "%"]])
                 ->limit($limit)
                 ->offset(($page - 1) * $limit)
                 ->take($request->itemsPerPage)
                 ->get();
 
-            $Data_count = User::where([['name', 'LIKE', "%" . $request->search . "%"]])
+            $Data_count = User::join('role_user', 'role_user.user_id', '=', $table . '.id')
+                ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                ->where([['users.name', 'LIKE', "%" . $request->search . "%"]])
+                ->where([['users.name', 'LIKE', "%" . $request->search . "%"]])
                 ->orWhere([['users.email', 'LIKE', "%" . $request->search . "%"]])
                 ->get();
         }
@@ -155,7 +164,6 @@ class UserController extends Controller
             'skip' => $skip,
             'take' => $request->itemsPerPage
         ], 200);
-
     }
 
     public function delete(Request $request, $table_id)
@@ -167,6 +175,5 @@ class UserController extends Controller
             'user' => $request->user(),
             '_benchmark' => microtime(true) -  $this->time_start,
         ], 200);
-
     }
 }
