@@ -25,6 +25,20 @@ Route::get('/login', LoginController::class);
 
 Route::post('/login', LoginController::class);
 
+Route::post('/logout', function (Request $request) {
+    $time_start = microtime(true);
+    auth()->guard('web')->logout();
+    $request->session()->invalidate();
+    $time_end = microtime(true);
+    $timeend = $time_end - $time_start;
+
+    return response()->json([
+        'success' => true,
+        '_elapsed_time' => $timeend,
+    ], 200);
+});
+
+
 Route::post('/register', [RegisterController::class, 'register']);
 
 
