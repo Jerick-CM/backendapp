@@ -5,11 +5,14 @@ add to file alias sail='bash vendor/bin/sail'
 exit
 source ~/.bash_aliases
 
+
+or ./vendor/bin/sail up
+
 ##  Show route list in laravel 
 
 php artisan route:list 
 
-##rollback migration
+## rollback migration
 php artisan migrate:rollback
 php sail artisan migrate:refresh --seed
 
