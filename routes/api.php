@@ -39,15 +39,22 @@ Route::post('/logout', function (Request $request) {
         'success' => true,
         '_elapsed_time' => $timeend,
     ], 200);
-
 });
 
 Route::post('/register', [RegisterController::class, 'register']);
 
 Route::group(['prefix' => 'user', 'middleware' => 'throttle:500,1'], function () {
 
+    Route::post('/user_datatable', [UserController::class, 'user_datatable']);
+
     Route::post('/datatable', [UserController::class, 'datatable']);
+
     Route::delete('/delete/{id}', [UserController::class, 'delete']);
+
+    Route::post('/resetpassword/{id}', [UserController::class, 'resetpassword']);
+
+    Route::post('/changestatus/{id}', [UserController::class, 'changestatus']);
+
 });
 
 Route::group(['prefix' => 'role', 'middleware' => 'throttle:500,1'], function () {

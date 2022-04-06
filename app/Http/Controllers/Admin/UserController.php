@@ -95,9 +95,7 @@ class UserController extends Controller
         } else {
             $skip = $request->page * $request->page;
         }
-
         $table = 'users';
-
         if ($request->sortBy == ""  && $request->sortDesc == "") {
 
             $page = $request->has('page') ? $request->get('page') : 1;
@@ -143,6 +141,7 @@ class UserController extends Controller
             $Data_count = User::join('role_user', 'role_user.user_id', '=', $table . '.id')
                 ->join('roles', 'roles.id', '=', 'role_user.role_id')
                 ->where([['users.name', 'LIKE', "%" . $request->search . "%"]])
+                ->where([['users.name', 'LIKE', "%" . $request->search . "%"]])
                 ->orWhere([['users.email', 'LIKE', "%" . $request->search . "%"]])
                 ->get();
         }
@@ -162,13 +161,10 @@ class UserController extends Controller
         return response()->json([
             'data' => $Data,
             'total' =>  $DataCount,
-            // 'total' =>  14,
             'skip' => $skip,
             'take' => $request->itemsPerPage
         ], 200);
     }
-
-
 
     public function delete(Request $request, $table_id)
     {
@@ -178,114 +174,6 @@ class UserController extends Controller
             'success' => 1,
             'user' => $request->user(),
             '_benchmark' => microtime(true) -  $this->time_start,
-        ], 200);
-    }
-
-    public function resetpassword(Request $request, $table_id)
-    {
-
-        $user = User::where('id', $table_id)->first();
-        $user->password = bcrypt($request->newpassword);
-        $user->save();
-
-        return response()->json([
-            'success' => 1,
-            'user_id' =>  $table_id,
-            'request' => $request,
-            'request_np' => $request->newpassword,
-            '_benchmark' => microtime(true) -  $this->time_start,
-        ], 200);
-    }
-
-    public function changestatus(Request $request, $table_id)
-    {
-
-        $user = User::where('id', $table_id)->first();
-        $user->is_active = ($request->selectedstatus == 'Active') ? 1 : 0;
-        $user->save();
-
-        return response()->json([
-            'success' => 1,
-            'status' => $request->selectedstatus,
-            'request' => $request,
-            '_benchmark' => microtime(true) -  $this->time_start,
-        ], 200);
-    }
-
-    public function user_datatable(Request $request)
-    {
-
-        if ($request->page == 1) {
-            $skip = 0;
-        } else {
-            $skip = $request->page * $request->page;
-        }
-
-        $table = 'users';
-
-        if ($request->sortBy == ""  && $request->sortDesc == "") {
-
-            $page = $request->has('page') ? $request->get('page') : 1;
-
-            $limit = $request->has('itemsPerPage') ? $request->get('itemsPerPage') : 10;
-
-            $Data = User::join('role_user', 'role_user.user_id', '=', $table . '.id')
-                ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                ->select('users.*', 'roles.name AS role_name', 'role_user.role_id AS role_id')
-                ->where('users.id', $request->user()->id)
-                ->limit($limit)
-                ->offset(($page - 1) * $limit)
-                ->take($request->itemsPerPage)
-                ->get();
-
-            $Data_count = User::join('role_user', 'role_user.user_id', '=', $table . '.id')
-                ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                ->where('users.id', $request->user()->id)
-
-                ->get();
-        } else {
-
-            if ($request->sortDesc) {
-                $order = 'desc';
-            } else {
-                $order = 'asc';
-            }
-
-            $page = $request->has('page') ? $request->get('page') : 1;
-            $limit = $request->has('itemsPerPage') ? $request->get('itemsPerPage') : 10;
-
-            $Data = User::join('role_user', 'role_user.user_id', '=', $table . '.id')
-                ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                ->select('users.*', 'roles.name AS role_name', 'role_user.role_id AS role_id')
-                ->where('users.id', $request->user()->id)
-                ->limit($limit)
-                ->offset(($page - 1) * $limit)
-                ->take($request->itemsPerPage)
-                ->get();
-
-            $Data_count = User::join('role_user', 'role_user.user_id', '=', $table . '.id')
-                ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                ->where('users.id', $request->user()->id)
-                ->get();
-        }
-
-        $DataCs =   $Data->count();
-        $DataCount =  $Data_count->count();
-
-        foreach ($Data as $key => $value) {
-            $Data[$key]['created'] = Carbon::parse($value['created_at'])->isoFormat('MMM Do YYYY - HH:mm');
-            $Data[$key]['updated'] = Carbon::parse($value['updated_at'])->isoFormat('MMM Do YYYY - HH:mm');
-        }
-
-        if ($DataCs > 0 && $DataCount == 0) {
-            $DataCount =   $DataCs;
-        }
-
-        return response()->json([
-            'data' => $Data,
-            'total' =>  $DataCount,
-            'skip' => $skip,
-            'take' => $request->itemsPerPage
         ], 200);
     }
 }

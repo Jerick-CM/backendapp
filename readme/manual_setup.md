@@ -275,3 +275,22 @@ GRANT ALL ON 'backend.*' TO 'sail'@'localhost';
 GRANT ALL PRIVILEGES ON *.* TO 'sail'@'localhost' WITH GRANT OPTION;
 
 https://levelup.gitconnected.com/setup-a-vm-for-laravel-8-with-ubuntu-20-04-php8-nginx-and-mysql-4b709de88154
+
+
+
+sudo apt remove --purge mysql-server
+sudo apt purge mysql-server
+sudo apt autoremove
+sudo apt autoclean
+sudo apt remove dbconfig-mysql
+
+
+
+sudo apt-get remove --purge mysql* -y
+sudo apt-get autoremove -y
+sudo apt-get autoclean
+
+
+
+https://trendoceans.com/completely-uninstall-mysql-server-in-ubuntu-20-04/
+
