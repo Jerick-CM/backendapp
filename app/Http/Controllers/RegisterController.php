@@ -9,7 +9,10 @@ use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\Socials;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Role;
+use App\Models\Role;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class RegisterController extends Controller
 {
@@ -84,10 +87,15 @@ class RegisterController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-
         $details = UserDetails::create([
             ['user_id' => $user->id]
+        ]);
 
+        $details = RoleUser::create([
+            [
+                'user_id' => $user->id,
+                'role_id' => 4, //4 is member
+            ]
         ]);
 
 
@@ -99,7 +107,8 @@ class RegisterController extends Controller
             'data' => $user,
             '_benchmark' => microtime(true) -  $this->time_start,
         ], 200);
-
     }
+
+
 
 }

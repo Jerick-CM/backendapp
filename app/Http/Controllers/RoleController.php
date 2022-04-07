@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Roles_Users;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class RoleController extends Controller
 {
@@ -25,14 +26,29 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($user_id)
+
+    public function create(Request $request)
     {
-        echo $user_id;
+        Role::create([
+            'name' => $request->name,
+        ]);
 
-        $user = User::find($user_id);
-
-        $user->roles()->save(new Role(['name' => 'Visitor']));
+        return response()->json([
+            'success' => 1,
+            'user' => $request->user(),
+            '_benchmark' => microtime(true) -  $this->time_start,
+        ], 200);
     }
+
+
+    // public function create($user_id)
+    // {
+    //     echo $user_id;
+
+    //     $user = User::find($user_id);
+
+    //     $user->roles()->save(new Role(['name' => 'Visitor']));
+    // }
 
     /**
      * Store a newly created resource in storage.
@@ -179,6 +195,69 @@ class RoleController extends Controller
             'role_user' =>  $role_user,
             'user' => $request->user(),
             '_benchmark' => microtime(true) -  $this->time_start,
+        ], 200);
+    }
+
+    public function datatable(Request $request)
+    {
+
+        if ($request->page == 1) {
+            $skip = 0;
+        } else {
+            $skip = $request->page * $request->page;
+        }
+
+
+        if ($request->sortBy == ""  && $request->sortDesc == "") {
+
+            $page = $request->has('page') ? $request->get('page') : 1;
+
+            $limit = $request->has('itemsPerPage') ? $request->get('itemsPerPage') : 10;
+
+            $Data = Role::limit($limit)
+                ->offset(($page - 1) * $limit)
+                ->take($request->itemsPerPage)->get();
+
+            $Data_count =  Role::limit($limit)
+                ->offset(($page - 1) * $limit)
+                ->take($request->itemsPerPage)->get();
+        } else {
+
+            if ($request->sortDesc) {
+                $order = 'desc';
+            } else {
+                $order = 'asc';
+            }
+
+            $page = $request->has('page') ? $request->get('page') : 1;
+            $limit = $request->has('itemsPerPage') ? $request->get('itemsPerPage') : 10;
+
+            $Data = Role::limit($limit)
+                ->offset(($page - 1) * $limit)
+                ->take($request->itemsPerPage)->get();
+
+            $Data_count =  Role::limit($limit)
+                ->offset(($page - 1) * $limit)
+                ->take($request->itemsPerPage)->get();
+        }
+
+        $DataCs =   $Data->count();
+        $DataCount =  $Data_count->count();
+
+        foreach ($Data as $key => $value) {
+            $Data[$key]['created'] = Carbon::parse($value['created_at'])->isoFormat('MMM Do YYYY - HH:mm');
+            $Data[$key]['updated'] = Carbon::parse($value['updated_at'])->isoFormat('MMM Do YYYY - HH:mm');
+        }
+
+        if ($DataCs > 0 && $DataCount == 0) {
+            $DataCount =   $DataCs;
+        }
+
+        return response()->json([
+            'data' => $Data,
+            'total' =>  $DataCount,
+            'skip' => $skip,
+            'take' => $request->itemsPerPage
         ], 200);
     }
 }

@@ -43,6 +43,20 @@ Route::post('/logout', function (Request $request) {
 
 Route::post('/register', [RegisterController::class, 'register']);
 
+
+
+// Route::post('/register_admin', function (Request $request) {
+//     $time_start = microtime(true);
+//     $time_end = microtime(true);
+//     $timeend = $time_end - $time_start;
+
+//     return response()->json([
+//         'success' => true,
+//         '_elapsed_time' => $timeend,
+//     ], 200);
+// });
+
+
 Route::group(['prefix' => 'user', 'middleware' => 'throttle:500,1'], function () {
 
     Route::post('/user_datatable', [UserController::class, 'user_datatable']);
@@ -59,11 +73,18 @@ Route::group(['prefix' => 'user', 'middleware' => 'throttle:500,1'], function ()
 
     Route::post('/update_username/{id}', [UserController::class, 'update_name']);
 
+    Route::post('/register', [UserController::class, 'register_admin']);
 });
 
 Route::group(['prefix' => 'role', 'middleware' => 'throttle:500,1'], function () {
 
     Route::get('/data', [RoleController::class, 'get_roles']);
+
     Route::post('/update_role/{id}', [RoleController::class, 'update_role']);
+
+    Route::post('/datatable', [RoleController::class, 'datatable']);
+
+    Route::post('/create', [RoleController::class, 'create']);
+
 
 });

@@ -37,5 +37,13 @@ class RolesTableSeeder extends Seeder
             'updated_at' =>  $now ,
           ]);
 
+          $now = Carbon::now();
+          DB::table('roles')->insert([
+            'name' => 'Member',
+            'created_at' =>  $now ,
+            'updated_at' =>  $now ,
+          ]);
+
+
     }
 }

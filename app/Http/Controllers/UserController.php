@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\Role;
+use App\Models\UserDetails;
 
 class UserController extends Controller
 {
@@ -349,4 +349,52 @@ class UserController extends Controller
     //         '_benchmark' => microtime(true) -  $this->time_start,
     //     ], 200);
     // }
+
+    public function register_admin(Request $request)
+    {
+
+        // $time_start = microtime(true);
+        // $time_end = microtime(true);
+        // $timeend = $time_end - $time_start;
+
+        // return response()->json([
+        //     'test' => 'hello world',
+        //     'success' => true,
+        //     '_elapsed_time' => $timeend,
+        // ], 200);
+
+
+        $request->validate([
+            'name' => ['required'],
+            'email' => ['required', 'email', 'unique:users'],
+            'password' => ['required', 'min:6',]
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+
+        UserDetails::create([
+            ['user_id' => $user->id]
+        ]);
+
+        $now = Carbon::now();
+        DB::table('role_user')->insert([
+            'user_id' => $user->id,
+            'role_id' => 4,//member
+            'created_at' =>  $now,
+            'updated_at' =>  $now,
+        ]);
+
+
+        return response()->json([
+            'success' => true,
+            'data' => $user,
+            '_benchmark' => microtime(true) -  $this->time_start,
+        ], 200);
+
+
+    }
 }
