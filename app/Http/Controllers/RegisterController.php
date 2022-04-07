@@ -13,7 +13,7 @@ use App\Models\Role;
 use App\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
+use App\Events\UserLogsEvent;
 class RegisterController extends Controller
 {
     public function create(Request $request)
@@ -111,4 +111,4 @@ class RegisterController extends Controller
 
 
 
-}
+}`

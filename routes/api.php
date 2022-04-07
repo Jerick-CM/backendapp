@@ -6,8 +6,10 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\LogController;
 
-
+use App\Events\UserLogsEvent;
+use App\Models\AdminUsersLogs;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,6 +30,15 @@ Route::get('/login', LoginController::class);
 Route::post('/login', LoginController::class);
 
 Route::post('/logout', function (Request $request) {
+
+
+    event(new UserLogsEvent($request->user()->id, AdminUsersLogs::TYPE_USERS_LOGOUT, [
+        'admin'  =>   $request->user()->name,
+        'admin_id'  => $request->user()->id,
+        'user_id'  =>  $request->user()->id,
+        'user_name'  =>  $request->user()->name
+    ]));
+
     $time_start = microtime(true);
 
     auth()->guard('web')->logout();
@@ -88,3 +99,13 @@ Route::group(['prefix' => 'role', 'middleware' => 'throttle:500,1'], function ()
 
 
 });
+
+
+Route::group(['prefix' => 'logs', 'middleware' => 'throttle:500,1'], function () {
+
+    Route::post('/datatable', [LogController::class, 'datatable']);
+
+
+
+});
+
