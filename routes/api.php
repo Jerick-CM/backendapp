@@ -55,10 +55,15 @@ Route::group(['prefix' => 'user', 'middleware' => 'throttle:500,1'], function ()
 
     Route::post('/changestatus/{id}', [UserController::class, 'changestatus']);
 
+    Route::post('/changepassword/{id}', [UserController::class, 'changepassword']);
+
+    Route::post('/update_username/{id}', [UserController::class, 'update_name']);
+
 });
 
 Route::group(['prefix' => 'role', 'middleware' => 'throttle:500,1'], function () {
 
     Route::get('/data', [RoleController::class, 'get_roles']);
+    Route::post('/update_role/{id}', [RoleController::class, 'update_role']);
 
 });

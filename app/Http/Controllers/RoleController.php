@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Role;
-use App\Models\USer;
+use App\Models\User;
+use App\Models\Roles_Users;
+use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
@@ -148,6 +150,35 @@ class RoleController extends Controller
             'data' => $data,
             '_benchmark' => microtime(true) -  $this->time_start
         ], 200);
+    }
 
+    public function update_role(Request $request, $table_id)
+    {
+
+        try {
+
+            $role_user = DB::table('role_user')->where('user_id', $table_id)->update(['role_id' => $request->role_id]);
+            $success = 1;
+
+            if ($request->role_id == 1) {
+                $user = User::findorfail($table_id);
+                $user->is_admin = 1;
+                $user->save();
+            } else {
+                $user = User::findorfail($table_id);
+                $user->is_admin = 0;
+                $user->save();
+            }
+        } catch (\Illuminate\Database\QueryException $ex) {
+
+            $success = 0;
+        }
+
+        return response()->json([
+            'success' => $success,
+            'role_user' =>  $role_user,
+            'user' => $request->user(),
+            '_benchmark' => microtime(true) -  $this->time_start,
+        ], 200);
     }
 }

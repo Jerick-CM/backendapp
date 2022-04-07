@@ -6,7 +6,11 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Role;
 
 class UserController extends Controller
 {
@@ -288,4 +292,61 @@ class UserController extends Controller
             'take' => $request->itemsPerPage
         ], 200);
     }
+
+    public function changepassword(Request $request, $table_id)
+    {
+
+        $user = DB::table('users')->where('id', $table_id)->get();
+        if (Hash::check($request->password, $user[0]->password)) {
+            // The passwords match...
+            $hash = 'a';
+            $user = User::where('id', $table_id)->first();
+            $user->password = bcrypt($request->newpassword);
+            $user->save();
+            $success = 1;
+            $data['msg'] = 'Password changes successfully.';
+        } else {
+            $hash = 'b';
+            $data['msg'] = 'Invalid password.';
+            $success = 0;
+        }
+
+        return response()->json([
+            'hash' =>  $hash,
+            'user_id' => $table_id,
+            // 'pass_old' => $user[0]->password,
+            // 'pass_new' => bcrypt($request->password),
+            'success' =>    $success,
+            'data' => $data,
+            'user' => $request->user(),
+            '_benchmark' => microtime(true) -  $this->time_start,
+        ], 200);
+    }
+
+    public function update_name(Request $request, $table_id)
+    {
+
+        $user = User::findOrFail($table_id);
+        $user->name = $request->user_name;
+        $user->save();
+
+        return response()->json([
+            'success' => 1,
+            'user' => $request->user(),
+            '_benchmark' => microtime(true) -  $this->time_start,
+        ], 200);
+    }
+
+    // public function update_role(Request $request, $table_id)
+    // {
+    //     $user = User::findOrFail($table_id);
+    //     $user->name = $request->user_name;
+    //     $user->save();
+
+    //     return response()->json([
+    //         'success' => 1,
+    //         'user' => $request->user(),
+    //         '_benchmark' => microtime(true) -  $this->time_start,
+    //     ], 200);
+    // }
 }
