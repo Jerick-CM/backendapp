@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\UserDetails;
 
+use App\Models\AdminUsersLogs;
+// event
+use App\Events\UserLogsEvent;
+
 class UserController extends Controller
 {
     /**
@@ -192,6 +196,13 @@ class UserController extends Controller
         $user->password = bcrypt($request->newpassword);
         $user->save();
 
+        event(new UserLogsEvent($request->id, AdminUsersLogs::TYPE_USERS_RESETPASSWORD, [
+            'user_id'  =>  $request->id,
+            'user_name'  =>  $request->user()->name,
+            'change_id'  =>    $user->id,
+            'change_name'  =>  $user->name
+        ]));
+
         return response()->json([
             'success' => 1,
             'user_id' =>  $table_id,
@@ -207,6 +218,15 @@ class UserController extends Controller
         $user = User::where('id', $table_id)->first();
         $user->is_active = ($request->selectedstatus == 'Active') ? 1 : 0;
         $user->save();
+
+
+        event(new UserLogsEvent($request->id, AdminUsersLogs::TYPE_USERS_CHANGESTATUS, [
+            'user_id'  =>  $request->id,
+            'user_name'  =>  $request->user()->name,
+            'change_id'  =>    $user->id,
+            'change_name'  =>  $user->name,
+            'status' => ($request->selectedstatus == 'Active') ? 'Active' : 'Inactive'
+        ]));
 
         return response()->json([
             'success' => 1,
@@ -311,6 +331,16 @@ class UserController extends Controller
             $success = 0;
         }
 
+
+        event(new UserLogsEvent($request->id, AdminUsersLogs::TYPE_USERS_CHANGEPASSWORD, [
+            'admin'  =>     $request->user()->name,
+            'admin_id'  =>  $request->id,
+            'user_id'  =>  $request->id,
+            'user_name'  =>  $request->user()->name
+        ]));
+
+
+
         return response()->json([
             'hash' =>  $hash,
             'user_id' => $table_id,
@@ -327,13 +357,24 @@ class UserController extends Controller
     {
 
         $user = User::findOrFail($table_id);
+        $current_name = $user->name;
         $user->name = $request->user_name;
+
         $user->save();
+
+        event(new UserLogsEvent($request->id, AdminUsersLogs::TYPE_USERS_CHANGEUSERNAME, [
+            'user_id'  =>  $request->id,
+            'user_name'  =>  $request->user()->name,
+            'change_id'  =>    $user->id,
+            'change_name'  =>  $request->user_name,
+            'from_name'  =>  $current_name,
+            'to_name'  => $request->user_name
+        ]));
 
         return response()->json([
             'success' => 1,
             'user' => $request->user(),
-            '_benchmark' => microtime(true) -  $this->time_start,
+            '_benchmark' => microtime(true) -  $this->time_start
         ], 200);
     }
 
@@ -383,7 +424,7 @@ class UserController extends Controller
         $now = Carbon::now();
         DB::table('role_user')->insert([
             'user_id' => $user->id,
-            'role_id' => 4,//member
+            'role_id' => 4, //member
             'created_at' =>  $now,
             'updated_at' =>  $now,
         ]);
@@ -394,7 +435,5 @@ class UserController extends Controller
             'data' => $user,
             '_benchmark' => microtime(true) -  $this->time_start,
         ], 200);
-
-
     }
 }

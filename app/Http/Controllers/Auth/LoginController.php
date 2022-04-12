@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-// event
-use App\Events\UserLogsEvent;
+
 // models
 use App\Models\User;
 use App\Models\AdminUsersLogs;
-
+// event
+use App\Events\UserLogsEvent;
 class LoginController extends Controller
 {
     public function __invoke(Request $request)

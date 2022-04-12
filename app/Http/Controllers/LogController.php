@@ -42,9 +42,11 @@ class LogController extends Controller
                 ->offset(($page - 1) * $limit)
                 ->take($request->itemsPerPage)->get();
 
-            $Data_count =  AdminUsersLogs::limit($limit)
-                ->offset(($page - 1) * $limit)
-                ->take($request->itemsPerPage)->get();
+            $Data_count =  AdminUsersLogs::get();
+                // limit($limit)
+                // ->offset(($page - 1) * $limit)
+                // ->take($request->itemsPerPage)->get();
+
         } else {
 
             if ($request->sortDesc) {
@@ -60,9 +62,10 @@ class LogController extends Controller
                 ->offset(($page - 1) * $limit)
                 ->take($request->itemsPerPage)->get();
 
-            $Data_count =  AdminUsersLogs::limit($limit)
-                ->offset(($page - 1) * $limit)
-                ->take($request->itemsPerPage)->get();
+            $Data_count =  AdminUsersLogs::get();
+                // limit($limit)
+                // ->offset(($page - 1) * $limit)
+                // ->take($request->itemsPerPage)->get();
         }
 
         $DataCs =   $Data->count();

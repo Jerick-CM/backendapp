@@ -50,6 +50,8 @@ Route::post('/logout', function (Request $request) {
         'success' => true,
         '_elapsed_time' => $timeend,
     ], 200);
+
+
 });
 
 Route::post('/register', [RegisterController::class, 'register']);

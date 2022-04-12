@@ -15,6 +15,10 @@ class AdminUsersLogs extends Model
     const TYPE_USERS_DELETE = 2;
     const TYPE_USERS_LOGIN = 3;
     const TYPE_USERS_LOGOUT = 4;
+    const TYPE_USERS_CHANGEPASSWORD = 5;
+    const TYPE_USERS_CHANGESTATUS = 6;
+    const TYPE_USERS_RESETPASSWORD = 7;
+    const TYPE_USERS_CHANGEUSERNAME = 8;
 
     protected $fillable = [
         'user_id',
@@ -54,6 +58,18 @@ class AdminUsersLogs extends Model
             case 4:
                 $result = 'Logout';
                 break;
+            case 5:
+                $result = 'ChangePassword';
+                break;
+            case 6:
+                $result = 'ChangeStatus';
+                break;
+            case 7:
+                $result = 'ResetPassword';
+                break;
+            case 8:
+                $result = 'Change Username';
+                break;
         }
         return $result;
     }
@@ -75,6 +91,18 @@ class AdminUsersLogs extends Model
                 break;
             case 4:
                 $result = __('adminuUsersLogs.users.logout', json_decode($this->attributes['meta'], true));
+                break;
+            case 5:
+                $result = __('adminuUsersLogs.users.changepassword', json_decode($this->attributes['meta'], true));
+                break;
+            case 6:
+                $result = __('adminuUsersLogs.users.changestatus', json_decode($this->attributes['meta'], true));
+                break;
+            case 7:
+                $result = __('adminuUsersLogs.users.resetpassword', json_decode($this->attributes['meta'], true));
+                break;
+            case 8:
+                $result = __('adminuUsersLogs.users.changename', json_decode($this->attributes['meta'], true));
                 break;
         }
 
