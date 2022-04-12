@@ -14,8 +14,6 @@ use App\Models\AdminUsersLogs;
 use App\Events\UserLogsEvent;
 
 
-
-
 class RoleController extends Controller
 {
     /**
@@ -43,7 +41,7 @@ class RoleController extends Controller
         event(new UserLogsEvent($request->user()->id, AdminUsersLogs::TYPE_USERS_CREATEROLE, [
             'user_id'  =>  $request->user()->id,
             'user_name'  =>  $request->user()->name,
-            'role_name' => $request->name,
+            'role_name' => $request->name
         ]));
 
 
@@ -288,6 +286,26 @@ class RoleController extends Controller
             'total' =>  $DataCount,
             'skip' => $skip,
             'take' => $request->itemsPerPage
+        ], 200);
+    }
+
+
+    public function delete(Request $request, $table_id)
+    {
+        $table = Role::findOrFail($table_id);
+        $table->delete();
+
+        event(new UserLogsEvent($request->id, AdminUsersLogs::TYPE_USERS_DELETEROLE, [
+            'user_id'  =>  $request->id,
+            'user_name'  =>  $request->user()->name,
+            'remove_id'  =>    $table->id,
+            'remove_name'  =>  $table->name
+        ]));
+
+        return response()->json([
+            'success' => 1,
+            'user' => $request->user(),
+            '_benchmark' => microtime(true) -  $this->time_start,
         ], 200);
     }
 }

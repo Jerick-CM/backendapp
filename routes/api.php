@@ -31,7 +31,6 @@ Route::post('/login', LoginController::class);
 
 Route::post('/logout', function (Request $request) {
 
-
     event(new UserLogsEvent($request->user()->id, AdminUsersLogs::TYPE_USERS_LOGOUT, [
         'admin'  =>   $request->user()->name,
         'admin_id'  => $request->user()->id,
@@ -50,8 +49,6 @@ Route::post('/logout', function (Request $request) {
         'success' => true,
         '_elapsed_time' => $timeend,
     ], 200);
-
-
 });
 
 Route::post('/register', [RegisterController::class, 'register']);
@@ -99,15 +96,10 @@ Route::group(['prefix' => 'role', 'middleware' => 'throttle:500,1'], function ()
 
     Route::post('/create', [RoleController::class, 'create']);
 
-
+    Route::delete('/delete/{id}', [RoleController::class, 'delete']);
 });
-
 
 Route::group(['prefix' => 'logs', 'middleware' => 'throttle:500,1'], function () {
 
     Route::post('/datatable', [LogController::class, 'datatable']);
-
-
-
 });
-

@@ -23,6 +23,7 @@ class AdminUsersLogs extends Model
     const TYPE_USERS_UPDATEROLE = 10;
     const TYPE_USERS_CREATEUSERFROMADMIN = 11;
     const TYPE_USERS_CREATEROLE = 12;
+    const TYPE_USERS_DELETEROLE = 13;
 
 
     protected $fillable = [
@@ -87,6 +88,9 @@ class AdminUsersLogs extends Model
             case 12:
                 $result = 'Create Role by Admin';
                 break;
+            case 13:
+                $result = 'Delete Role by Admin';
+                break;
         }
         return $result;
     }
@@ -132,6 +136,9 @@ class AdminUsersLogs extends Model
                 break;
             case 12:
                 $result = __('adminuUsersLogs.users.createrolebyadmin', json_decode($this->attributes['meta'], true));
+                break;
+            case 13:
+                $result = __('adminuUsersLogs.users.deleterolebyadmin', json_decode($this->attributes['meta'], true));
                 break;
         }
 

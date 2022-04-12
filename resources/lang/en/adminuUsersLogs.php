@@ -17,6 +17,7 @@ return [
         'roleuser' => 'Admin `:user_name` updated role of  user :change_name from :from_role to :to_role.',
         'createuserviaadmin' => 'Admin `:user_name` created a new user name: :create_name email: :create_email . ',
         'createrolebyadmin' => 'Admin `:user_name` created a new role named :role_name . ',
+        'deleterolebyadmin' => 'Admin `:user_name` deleted new role named :remove_name . ',
 
     ],
 ];
