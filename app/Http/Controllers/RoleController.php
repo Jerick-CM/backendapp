@@ -293,6 +293,7 @@ class RoleController extends Controller
     public function delete(Request $request, $table_id)
     {
         $table = Role::findOrFail($table_id);
+
         $table->delete();
 
         event(new UserLogsEvent($request->id, AdminUsersLogs::TYPE_USERS_DELETEROLE, [
