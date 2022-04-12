@@ -9,6 +9,13 @@ use App\Models\Roles_Users;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+use App\Models\AdminUsersLogs;
+// event
+use App\Events\UserLogsEvent;
+
+
+
+
 class RoleController extends Controller
 {
     /**
@@ -32,6 +39,13 @@ class RoleController extends Controller
         Role::create([
             'name' => $request->name,
         ]);
+
+        event(new UserLogsEvent($request->user()->id, AdminUsersLogs::TYPE_USERS_CREATEROLE, [
+            'user_id'  =>  $request->user()->id,
+            'user_name'  =>  $request->user()->name,
+            'role_name' => $request->name,
+        ]));
+
 
         return response()->json([
             'success' => 1,
@@ -173,7 +187,12 @@ class RoleController extends Controller
 
         try {
 
+            $current_role = DB::table('role_user')->where('user_id', $table_id)->select('role_id')->get();
+            $role = Role::where('id', $current_role[0]->role_id)->select('name')->get();
+
+
             $role_user = DB::table('role_user')->where('user_id', $table_id)->update(['role_id' => $request->role_id]);
+            $role_new = Role::where('id', $request->role_id)->select('name')->get();
             $success = 1;
 
             if ($request->role_id == 1) {
@@ -185,12 +204,23 @@ class RoleController extends Controller
                 $user->is_admin = 0;
                 $user->save();
             }
+
+            event(new UserLogsEvent($request->id, AdminUsersLogs::TYPE_USERS_UPDATEROLE, [
+                'user_id'  =>  $request->id,
+                'user_name'  =>  $request->user()->name,
+                'change_id'  =>    $user->id,
+                'change_name'  =>  $user->name,
+                'from_role' => $role[0]->name,
+                'to_role' =>  $role_new[0]->name,
+            ]));
         } catch (\Illuminate\Database\QueryException $ex) {
 
             $success = 0;
         }
 
+
         return response()->json([
+
             'success' => $success,
             'role_user' =>  $role_user,
             'user' => $request->user(),

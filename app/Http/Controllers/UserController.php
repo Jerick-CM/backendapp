@@ -182,6 +182,14 @@ class UserController extends Controller
     {
         $table = User::findOrFail($table_id);
         $table->delete();
+
+        event(new UserLogsEvent($request->id, AdminUsersLogs::TYPE_USERS_DELETUSER, [
+            'user_id'  =>  $request->id,
+            'user_name'  =>  $request->user()->name,
+            'remove_id'  =>    $table->id,
+            'remove_name'  =>  $table->name
+        ]));
+
         return response()->json([
             'success' => 1,
             'user' => $request->user(),
@@ -430,10 +438,18 @@ class UserController extends Controller
         ]);
 
 
+        event(new UserLogsEvent($request->user()->id, AdminUsersLogs::TYPE_USERS_CREATEUSERFROMADMIN, [
+            'user_id'  =>  $request->user()->id,
+            'user_name'  =>  $request->user()->name,
+            'create_name'  =>    $request->name,
+            'create_email'  =>  $request->email,
+        ]));
+
         return response()->json([
             'success' => true,
             'data' => $user,
             '_benchmark' => microtime(true) -  $this->time_start,
         ], 200);
+
     }
 }
